@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <title>Calculadora de Frete Worldpuppy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4f8cff 0%, #ff7eb9 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(79, 140, 255, 0.15);
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+        h1 {
+            color: #4f8cff;
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin: 16px 0 8px;
+            color: #ff7eb9;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #4f8cff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border: 1.5px solid #ff7eb9;
+        }
+        button {
+            background: linear-gradient(90deg, #4f8cff 60%, #ff7eb9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #4f8cff 40%, #ff7eb9 100%);
+        }
+        .resultado {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #4f8cff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <img src="logo atual.png" alt="Logo Worldpuppy" style="max-width: 120px; display: block; margin: 0 auto 16px auto; border-radius: 16px; opacity: 1;">
+    <h1>Calculadora de Frete Worldpuppy </h1>
+    <form id="freteForm">
+            <label for="cidadeOrigem">Cidade de origem:</label>
+            <input type="text" id="cidadeOrigem" name="cidadeOrigem" value="SUZANO" readonly style="background:#f0f0f0; color:#888;">
+            <small style="display:block; color:#888; margin-bottom:8px;">
+                Informe apenas o CEP de destino. A distância (km rodados) será calculada automaticamente a partir de SUZANO.
+            </small>
+            <label for="cepDestino">CEP de destino:</label>
+            <input type="text" id="cepDestino" name="cepDestino" maxlength="25" required placeholder="Ex: 12345-678 ou Rua, Cidade">
+            <div id="map" style="height: 300px; margin-top: 20px; border-radius: 8px;"></div>
+
+                                                <button type="submit">Calcular Frete</button>
+        </form>
+        <div class="resultado" id="resultado"></div>
+    </div>
+        <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+        // Inicialização do mapa Leaflet
+        const suzano = [-23.5428, -46.3108]; // Coordenadas aproximadas de Suzano, SP
+        const map = L.map('map').setView(suzano, 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marcador de origem fixo
+        const markerOrigem = L.marker(suzano).addTo(map).bindPopup('Suzano, SP').openPopup();
+        let markerDestino = null;
+
+
+        // Atualiza o mapa ao digitar o CEP
+        document.getElementById('cepDestino').addEventListener('blur', async function() {
+            const cep = this.value;
+            if (!cep) return;
+            const coordDestino = await buscarCoordenadasPorCep(cep);
+            if (coordDestino) {
+                if (markerDestino) map.removeLayer(markerDestino);
+                markerDestino = L.marker(coordDestino).addTo(map).bindPopup('Destino').openPopup();
+                map.fitBounds([suzano, coordDestino], {padding: [40, 40]});
+            }
+        });
+        </script>
+        <script src="script.js"></script>
+</body>
+</html>
