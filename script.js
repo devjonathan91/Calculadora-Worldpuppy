@@ -61,7 +61,7 @@ async function calcularFrete(event) {
     const kmRodados = calcularDistanciaLeaflet(suzanoCoord, coordDestino);
 
     // Cálculo do frete
-    const valorPorKm = 1.10;
+    const valorPorKm = 1.50;
     const valorFrete = kmRodados * valorPorKm;
     resultado.innerHTML = `O valor do frete de ${cidadeOrigem} para ${destinoInput} é R$ ${valorFrete.toFixed(2)}<br>Distância: ${kmRodados.toFixed(2)} km`;
 }
@@ -73,4 +73,5 @@ window.addEventListener('DOMContentLoaded', function() {
         form.onsubmit = calcularFrete;
     }
 });
+
 
